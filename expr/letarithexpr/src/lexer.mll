@@ -20,5 +20,9 @@ rule read =
   | "0" { ZERO }
   | "succ" { SUCC }  
   | "pred" { PRED }
-  | "iszero" { ISZERO }    
+  | "iszero" { ISZERO }   
+  | "let" { LET }
+  | "=" { ASSIGN }
+  | "in" { IN }
+  | ['a'-'z']* as s { ID s }
   | eof { EOF }

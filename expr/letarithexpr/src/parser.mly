@@ -15,6 +15,9 @@ open Ast
 %token PRED
 %token ISZERO
 %token <string> ID
+%token ASSIGN
+%token LET
+%token IN
 %token LPAREN
 %token RPAREN
 %token EOF
@@ -46,4 +49,5 @@ expr:
   | ISZERO; e = expr { IsZero(e) }
   | LPAREN; e=expr; RPAREN {e}
   | x = ID { Var x }
+  | LET; x = ID; ASSIGN; e1 = expr; IN; e2 = expr; {Let(x,e1,e2)}
 ;

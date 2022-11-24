@@ -37,7 +37,11 @@ let rec is_nv = function
   | Succ(e) -> is_nv e
   | _ -> false
   
-let rec trace1 = function
+
+
+let rec trace1 e =
+  let rho = function _ -> failwith "error" in
+  match e with
     If(True,e1,_) -> e1
   | If(False,_,e2) -> e2
   | If(e0,e1,e2) -> let e0' = trace1 e0 in If(e0',e1,e2)
@@ -57,9 +61,12 @@ let rec trace1 = function
   | IsZero(Zero) -> True
   | IsZero(Succ(e)) when is_nv e -> False    
   | IsZero(e) -> let e' = trace1 e in IsZero(e')
-  | Let(Var(s), e1, e2) -> 
+  | Var(s) -> rho s
+  | Let(s, Succ(e1), e2) -> 
+  | Let(s, e1, e2) -> trace1 (Let(s, trace1 e1, e2))
   | _ -> raise NoRuleApplies
 ;;
+
 
 let rec trace e = try
     let e' = trace1 e
