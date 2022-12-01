@@ -2,14 +2,16 @@ open LetarithexprLib.Main
 
 (* wrapping results for testing *)
 
-type wexprval = exprval option
+type wexprval = exprval option;;
 
 let string_of_wval = function 
     Some v -> string_of_val v
   | _ -> "Error"
+;;
 
 let weval e = try Some (eval e)
   with _ -> None
+;;
   
 let tests = [
   ("if true then true else false and false",Bool true);
@@ -29,9 +31,9 @@ let tests = [
   ("let x = true in x and let x = false in x", Bool false);
   ("let x = (let x = true in x) and false in x", Bool false);
   ("let x = (let x = 0 in iszero succ x) or let y = true in y in x", Bool true);      
-]
+];;
 
-let oktests = List.map (fun (x,y) -> (x,Some y)) tests
+let oktests = List.map (fun (x,y) -> (x,Some y)) tests;;
 
 let errtests = [
   ("iszero true", None);
@@ -40,7 +42,7 @@ let errtests = [
   ("pred 0", None);
   ("pred pred succ 0", None);
   ("let x = iszero (let x = 0 in succ x) or x in x", None);
-]
+];;
 
 
 (**********************************************************************
@@ -62,11 +64,28 @@ let%test _ =
        b && b')
     true
     (oktests @ errtests)
+      ;;
 
 
 (**********************************************************************
  Test small-step semantics
  **********************************************************************)
+
+ (* last element of a list *)
+let rec last = function
+    [] -> failwith "last on empty list"
+  | [x] -> x
+  | _::l -> last l
+;;
+
+
+
+(* reduce expression with small-step semantics and convert into value option *)
+let eval_smallstep e = match last (trace e) with
+  | e when is_nv e -> Some (Nat(int_of_nat e))
+  | e when is_bl e -> Some(Bool(bool_of_bool e))
+  | _ -> None
+  ;;
 
 let%test _ =
   print_newline();
@@ -83,4 +102,4 @@ let%test _ =
        b && b')
     true
     (oktests @ errtests)
-    
+;;
